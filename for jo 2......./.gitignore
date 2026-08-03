@@ -1,0 +1,23 @@
+# Dependencies
+**/node_modules/
+**/venv/
+**/env/
+
+# Next.js build
+**/frontend/.next/
+**/frontend/out/
+
+# Python & Django
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+backend/db.sqlite3
+
+# Environment & OS
+.env
+.env.local
+.env.production
+.DS_Store
+*.log
