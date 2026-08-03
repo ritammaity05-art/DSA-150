@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Account - Tin Tun Store{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card card-custom p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold mb-1">Create an Account</h3>
+                    <p class="text-muted small">Join <b>Tin Tun Store</b> as a Customer or Seller</p>
+                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">First Name</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Last Name</label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Username</label>
+                        {{ form.username }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Email Address</label>
+                        {{ form.email }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Phone Number</label>
+                        {{ form.phone_number }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Account Role</label>
+                        {{ form.role }}
+                        <div class="form-text">Choose Seller to list & manage products, or Customer to shop.</div>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Password</label>
+                            {{ form.password }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Confirm Password</label>
+                            {{ form.confirm_password }}
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary-custom w-100 py-3 mb-3">Create Account</button>
+                </form>
+                <div class="text-center">
+                    <p class="text-muted small mb-0">Already registered? <a href="{% url 'accounts:login' %}" class="text-primary fw-bold text-decoration-none">Sign In</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

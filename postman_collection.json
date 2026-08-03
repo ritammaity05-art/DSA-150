@@ -1,0 +1,75 @@
+{
+	"info": {
+		"name": "ShopFlow Pro REST API Collection",
+		"description": "Ready-to-use Postman collection for testing JWT Authentication, Categories, Products, Cart, Orders, Payments, and Analytics.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"testuser@example.com\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"User\",\n  \"role\": \"customer\",\n  \"password\": \"Password123!\",\n  \"confirm_password\": \"Password123!\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/v1/accounts/register/", "host": ["{{baseUrl}}"], "path": ["api", "v1", "accounts", "register", ""]}
+					}
+				},
+				{
+					"name": "JWT Obtain Token (Login)",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@shopflowpro.com\",\n  \"password\": \"AdminPass123!\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/v1/accounts/token/", "host": ["{{baseUrl}}"], "path": ["api", "v1", "accounts", "token", ""]}
+					}
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "List Products",
+					"request": {
+						"method": "GET",
+						"url": {"raw": "{{baseUrl}}/api/v1/products/items/", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products", "items", ""]}
+					}
+				},
+				{
+					"name": "List Categories",
+					"request": {
+						"method": "GET",
+						"url": {"raw": "{{baseUrl}}/api/v1/categories/", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products", "categories", ""]}
+					}
+				}
+			]
+		},
+		{
+			"name": "Cart",
+			"item": [
+				{
+					"name": "Get Cart",
+					"request": {
+						"method": "GET",
+						"url": {"raw": "{{baseUrl}}/api/v1/cart/", "host": ["{{baseUrl}}"], "path": ["api", "v1", "cart", ""]}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://127.0.0.1:8000"
+		}
+	]
+}

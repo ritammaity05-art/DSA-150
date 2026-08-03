@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - ShopFlow Pro{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h3 class="fw-bold mb-4"><i class="fa-solid fa-lock me-2 text-success"></i> Secure Checkout</h3>
+
+    <form action="{% url 'orders:place_order' %}" method="POST">
+        {% csrf_token %}
+        <div class="row g-4">
+            <!-- Left Column: Address & Payment -->
+            <div class="col-lg-7">
+                <!-- Shipping Address -->
+                <div class="card card-custom p-4 mb-4">
+                    <h5 class="fw-bold mb-3"><i class="fa-solid fa-location-dot text-primary me-2"></i> Select Shipping Address</h5>
+                    
+                    {% if addresses %}
+                    <div class="d-flex flex-column gap-3 mb-3">
+                        {% for addr in addresses %}
+                        <div class="border rounded-3 p-3 bg-light d-flex align-items-start gap-3">
+                            <input class="form-check-input mt-1" type="radio" name="shipping_address_id" value="{{ addr.id }}" id="addr_{{ addr.id }}" {% if addr.is_default or forloop.first %}checked{% endif %}>
+                            <label class="form-check-label flex-grow-1" for="addr_{{ addr.id }}">
+                                <div class="fw-bold text-dark">{{ addr.recipient_name }} ({{ addr.title }})</div>
+                                <div class="small text-muted">{{ addr.street_address }}, {{ addr.city }}, {{ addr.state }} {{ addr.postal_code }}</div>
+                                <div class="small text-muted">Phone: {{ addr.phone_number }}</div>
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i> You don't have any saved shipping address yet.
+                        <a href="{% url 'accounts:profile' %}#addressTab" class="fw-bold text-dark ms-1">Add Address in Profile</a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Payment Methods -->
+                <div class="card card-custom p-4">
+                    <h5 class="fw-bold mb-3"><i class="fa-solid fa-credit-card text-primary me-2"></i> Select Payment Method</h5>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="border rounded-3 p-3 bg-light d-flex align-items-center gap-3">
+                            <input class="form-check-input" type="radio" name="payment_method" value="COD" id="pm_cod" checked>
+                            <label class="form-check-label d-flex align-items-center gap-2 fw-semibold" for="pm_cod">
+                                <i class="fa-solid fa-hand-holding-dollar fs-4 text-success"></i> Cash on Delivery (COD)
+                            </label>
+                        </div>
+                        <div class="border rounded-3 p-3 bg-light d-flex align-items-center gap-3">
+                            <input class="form-check-input" type="radio" name="payment_method" value="STRIPE" id="pm_stripe">
+                            <label class="form-check-label d-flex align-items-center gap-2 fw-semibold" for="pm_stripe">
+                                <i class="fa-brands fa-stripe fs-3 text-primary"></i> Credit / Debit Card (Stripe Integrated)
+                            </label>
+                        </div>
+                        <div class="border rounded-3 p-3 bg-light d-flex align-items-center gap-3">
+                            <input class="form-check-input" type="radio" name="payment_method" value="RAZORPAY" id="pm_razorpay">
+                            <label class="form-check-label d-flex align-items-center gap-2 fw-semibold" for="pm_razorpay">
+                                <i class="fa-solid fa-wallet fs-4 text-info"></i> Razorpay UPI / Cards
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="form-label font-semibold text-secondary">Order Notes (Optional)</label>
+                        <textarea name="notes" class="form-control" rows="2" placeholder="Special instructions for delivery..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Summary -->
+            <div class="col-lg-5">
+                <div class="card card-custom p-4 sticky-top" style="top: 90px;">
+                    <h5 class="fw-bold mb-3">Order Items ({{ cart.total_items }})</h5>
+
+                    <div class="d-flex flex-column gap-2 mb-3" style="max-height: 240px; overflow-y: auto;">
+                        {% for item in cart.items.all %}
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                            <div>
+                                <div class="fw-bold small text-truncate" style="max-width: 220px;">{{ item.product.title }}</div>
+                                <span class="small text-muted">{{ item.quantity }} x ${{ item.product.current_price }}</span>
+                            </div>
+                            <span class="fw-semibold text-primary">${{ item.total_price }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Subtotal</span>
+                        <span>${{ cart.subtotal|floatformat:2 }}</span>
+                    </div>
+                    {% if cart.discount_amount > 0 %}
+                    <div class="d-flex justify-content-between mb-2 text-success">
+                        <span>Discount</span>
+                        <span>-${{ cart.discount_amount|floatformat:2 }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Tax (10% VAT)</span>
+                        <span>${{ cart.tax_amount|floatformat:2 }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Shipping Fee</span>
+                        <span>${{ cart.shipping_fee|floatformat:2 }}</span>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="fw-extrabold fs-5">Grand Total</span>
+                        <span class="fw-extrabold fs-4 text-primary">${{ cart.grand_total|floatformat:2 }}</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom w-100 py-3 rounded-pill" {% if not addresses %}disabled{% endif %}>
+                        <i class="fa-solid fa-check-circle me-2"></i> Confirm & Place Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

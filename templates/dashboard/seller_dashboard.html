@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Seller Portal - ShopFlow Pro{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-extrabold mb-1">Seller Portal & Inventory</h2>
+            <p class="text-muted small mb-0">Track your product catalog performance and order fulfillments</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'analytics:reports' %}?type=products&format=csv" class="btn btn-outline-primary rounded-pill px-3"><i class="fa-solid fa-file-csv me-1"></i> Inventory CSV</a>
+            <a href="{% url 'analytics:reports' %}?type=products&format=excel" class="btn btn-success rounded-pill px-3"><i class="fa-solid fa-file-excel me-1"></i> Inventory Excel</a>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon primary"><i class="fa-solid fa-box"></i></div>
+                <div>
+                    <span class="text-muted small text-uppercase font-semibold">Total Listed Products</span>
+                    <h3 class="fw-bold mb-0">{{ total_products }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon success"><i class="fa-solid fa-sack-dollar"></i></div>
+                <div>
+                    <span class="text-muted small text-uppercase font-semibold">Seller Revenue</span>
+                    <h3 class="fw-bold mb-0">${{ total_revenue|floatformat:2 }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon warning"><i class="fa-solid fa-cart-flatbed"></i></div>
+                <div>
+                    <span class="text-muted small text-uppercase font-semibold">Seller Orders</span>
+                    <h3 class="fw-bold mb-0">{{ total_orders }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders for Seller -->
+    <div class="card card-custom p-4">
+        <h5 class="fw-bold mb-3">Customer Orders for Your Products</h5>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in recent_orders %}
+                    <tr>
+                        <td><b class="text-primary">#{{ order.order_number }}</b></td>
+                        <td>{{ order.user.email }}</td>
+                        <td><span class="badge bg-primary">{{ order.order_status }}</span></td>
+                        <td><span class="small text-muted">{{ order.created_at|date:"M d, Y" }}</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">No orders placed for your listed products yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

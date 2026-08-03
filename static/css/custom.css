@@ -1,0 +1,161 @@
+/* ShopFlow Pro Premium Design System */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --secondary: #64748b;
+    --accent: #f59e0b;
+    --dark-bg: #0f172a;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(226, 232, 240, 0.8);
+    --text-primary: #1e293b;
+    --text-muted: #64748b;
+    --radius-lg: 1rem;
+    --radius-md: 0.75rem;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+    --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 20px 30px -10px rgba(37, 99, 235, 0.15);
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: #f8fafc;
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Glassmorphism Navbar */
+.navbar-glass {
+    background: rgba(15, 23, 42, 0.95) !important;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brand-gradient {
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #9333ea 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+/* Custom Cards */
+.card-custom {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;
+}
+
+.card-custom:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Product Image Box */
+.product-img-wrapper {
+    position: relative;
+    height: 240px;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    overflow: hidden;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-img-wrapper img {
+    max-height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.card-custom:hover .product-img-wrapper img {
+    transform: scale(1.06);
+}
+
+/* Badges & Buttons */
+.badge-discount {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+}
+
+.badge-role {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border: none;
+    font-weight: 600;
+    padding: 0.6rem 1.25rem;
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    transition: all 0.2s ease;
+}
+
+.btn-primary-custom:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    color: white;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+    transform: translateY(-1px);
+}
+
+/* Dashboards Stats Card */
+.stat-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.stat-icon.primary { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
+.stat-icon.success { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.stat-icon.warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.stat-icon.danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+/* Micro-animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}

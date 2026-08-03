@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: tin-tun-store
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn shopflow.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.8
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: "*"
