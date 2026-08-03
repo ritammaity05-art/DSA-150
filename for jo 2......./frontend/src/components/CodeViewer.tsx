@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { ProblemDetail, LineByLine } from '@/lib/api';
+import { ProblemDetail } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
 import { Terminal, Copy, Check, Code, HelpCircle, Layers } from 'lucide-react';
 
@@ -20,13 +20,13 @@ export default function CodeViewer({ problem }: CodeViewerProps) {
   const getCode = () => {
     switch (activeLang) {
       case 'python':
-        return problem.code_python;
+        return problem.code_python || `# Python solution for ${problem.title}\ndef solve():\n    pass`;
       case 'cpp':
-        return problem.code_cpp;
+        return problem.code_cpp || `// C++ solution for ${problem.title}\nclass Solution {\npublic:\n    void solve() {}\n};`;
       case 'java':
-        return problem.code_java;
+        return problem.code_java || `// Java solution for ${problem.title}\nclass Solution {\n    public void solve() {}\n}`;
       case 'javascript':
-        return problem.code_javascript;
+        return problem.code_javascript || `// JavaScript solution for ${problem.title}\nfunction solve() {\n    return;\n}`;
     }
   };
 
@@ -39,7 +39,35 @@ export default function CodeViewer({ problem }: CodeViewerProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Find line explanation match
+  // Simple token highlighter for VS Code style syntax coloring
+  const renderHighlightedLine = (lineStr: string) => {
+    if (lineStr.trim().startsWith('#') || lineStr.trim().startsWith('//')) {
+      return <span className="text-emerald-500 italic font-mono">{lineStr}</span>;
+    }
+
+    const keywords = [
+      'def', 'return', 'if', 'else', 'in', 'for', 'while', 'import', 'from',
+      'class', 'public', 'private', 'vector', 'unordered_map', 'void', 'int',
+      'bool', 'boolean', 'const', 'let', 'var', 'function', 'Map', 'new', 'Stack',
+      'HashMap', 'String', 'vector<int>', 'vector<string>'
+    ];
+
+    const tokens = lineStr.split(/(\s+|[(),:{}\[\];=<>])/);
+
+    return tokens.map((token, i) => {
+      if (keywords.includes(token)) {
+        return <span key={i} className="text-sky-400 font-bold">{token}</span>;
+      }
+      if (/^".*"$/.test(token) || /^'.*'$/.test(token)) {
+        return <span key={i} className="text-amber-300">{token}</span>;
+      }
+      if (/^\d+$/.test(token)) {
+        return <span key={i} className="text-emerald-300 font-mono">{token}</span>;
+      }
+      return <span key={i}>{token}</span>;
+    });
+  };
+
   const selectedLineAnnotation = problem.line_by_line.find(
     (item) => selectedLineIdx !== null && item.line === selectedLineIdx + 1
   );
@@ -58,46 +86,50 @@ export default function CodeViewer({ problem }: CodeViewerProps) {
             <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
           </div>
 
+          {/* Language Selector Buttons - Fully Supported */}
           <div className="flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-white/5 text-xs font-mono">
             <button
               onClick={() => { setActiveLang('python'); setSelectedLineIdx(null); }}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+              className={`px-3.5 py-1.5 rounded-lg font-bold transition-all ${
                 activeLang === 'python'
-                  ? 'bg-blue-600 text-white shadow-md'
+                  ? 'bg-amber-500 text-slate-950 shadow-md scale-105'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              Python
+              🐍 Python
             </button>
+
             <button
               onClick={() => { setActiveLang('cpp'); setSelectedLineIdx(null); }}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+              className={`px-3.5 py-1.5 rounded-lg font-bold transition-all ${
                 activeLang === 'cpp'
-                  ? 'bg-blue-600 text-white shadow-md'
+                  ? 'bg-amber-500 text-slate-950 shadow-md scale-105'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              C++
+              ⚡ C++
             </button>
+
             <button
               onClick={() => { setActiveLang('java'); setSelectedLineIdx(null); }}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+              className={`px-3.5 py-1.5 rounded-lg font-bold transition-all ${
                 activeLang === 'java'
-                  ? 'bg-blue-600 text-white shadow-md'
+                  ? 'bg-amber-500 text-slate-950 shadow-md scale-105'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              Java
+              ☕ Java
             </button>
+
             <button
               onClick={() => { setActiveLang('javascript'); setSelectedLineIdx(null); }}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+              className={`px-3.5 py-1.5 rounded-lg font-bold transition-all ${
                 activeLang === 'javascript'
-                  ? 'bg-blue-600 text-white shadow-md'
+                  ? 'bg-amber-500 text-slate-950 shadow-md scale-105'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              JavaScript
+              📜 JavaScript
             </button>
           </div>
         </div>
@@ -119,8 +151,8 @@ export default function CodeViewer({ problem }: CodeViewerProps) {
         {/* Code Content Area */}
         <div className="lg:col-span-8 p-4 overflow-x-auto border-b lg:border-b-0 lg:border-r border-white/10">
           <p className="text-[11px] text-gray-500 font-sans mb-3 flex items-center gap-1.5">
-            <HelpCircle className="w-3.5 h-3.5 text-blue-400" />
-            <span>{isBengali ? "লাইনের ওপর ক্লিক বা হোভার করে ব্যাখ্যা দেখুন" : "Click or hover any line to view detailed line-by-line breakdown"}</span>
+            <HelpCircle className="w-3.5 h-3.5 text-amber-400" />
+            <span>{isBengali ? "লাইনের ওপর ক্লিক বা হোভার করে সহজ ব্যাখ্যা দেখুন" : "Click or hover any line to view detailed line-by-line breakdown"}</span>
           </p>
 
           <pre className="text-gray-200 leading-relaxed font-mono">
@@ -142,10 +174,10 @@ export default function CodeViewer({ problem }: CodeViewerProps) {
                     {lineNum}
                   </span>
                   <span className="flex-1 whitespace-pre">
-                    {lineStr}
+                    {renderHighlightedLine(lineStr)}
                   </span>
                   {hasAnnotation && (
-                    <span className="w-2 h-2 rounded-full bg-blue-400 flex-shrink-0 ml-2" title="Explanation available" />
+                    <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0 ml-2" title="Explanation available" />
                   )}
                 </div>
               );
@@ -156,7 +188,7 @@ export default function CodeViewer({ problem }: CodeViewerProps) {
         {/* Line-by-Line Synchronized Explanation Inspector */}
         <div className="lg:col-span-4 p-5 bg-slate-900/60 font-sans flex flex-col justify-between">
           <div>
-            <div className="flex items-center gap-2 pb-3 border-b border-white/10 text-xs font-bold uppercase tracking-wider text-blue-400">
+            <div className="flex items-center gap-2 pb-3 border-b border-white/10 text-xs font-bold uppercase tracking-wider text-amber-400">
               <Code className="w-4 h-4" />
               <span>{isBengali ? "লাইন বিশ্লেষণ (Line Explanation)" : "Line-by-Line Breakdown"}</span>
             </div>
@@ -173,12 +205,12 @@ export default function CodeViewer({ problem }: CodeViewerProps) {
 
                 <div className="mt-3">
                   <h6 className="text-xs font-bold text-white mb-1">
-                    {isBengali ? "এই লাইনের কাজ:" : "Meaning & Purpose:"}
+                    {isBengali ? "এই লাইনের সহজ কাজ:" : "Meaning & Purpose:"}
                   </h6>
                   <p className="text-xs text-gray-300 leading-relaxed bg-slate-900 p-3 rounded-xl border border-white/5">
                     {selectedLineAnnotation
                       ? selectedLineAnnotation.explanation
-                      : (isBengali ? "এই লাইনটি প্রোগ্রামটির লজিক বাস্তবায়নে সহায়তা করে।" : "This line executes core conditional or computational step for the solution.")}
+                      : (isBengali ? "এই লাইনটি প্রোগ্রামটির লজিক বাস্তবায়নে সহায়তা করে।" : "This line executes a core conditional or computational step for the solution.")}
                   </p>
                 </div>
               </div>
@@ -193,7 +225,7 @@ export default function CodeViewer({ problem }: CodeViewerProps) {
           </div>
 
           <div className="mt-6 pt-4 border-t border-white/10 text-[11px] text-gray-500">
-            {isBengali ? "150 STRICKs • অরিজিনাল ক্লিন সলিউশন" : "150 STRICKs • Verified Production Standard"}
+            150 STRICKs • Powered by Ritam
           </div>
 
         </div>
