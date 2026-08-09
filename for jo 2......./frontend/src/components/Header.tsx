@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
-import { Search, Globe, Code2, User, LogOut, Bookmark, Sparkles, Sun, Moon, BookOpen } from 'lucide-react';
+import { Search, Globe, Code2, User, LogOut, Bookmark, Sparkles, Sun, Moon, BookOpen, Layers } from 'lucide-react';
 import AuthModal from './AuthModal';
 
 interface HeaderProps {
@@ -58,12 +58,22 @@ export default function Header({ onSearchChange, searchTerm = '' }: HeaderProps)
           </div>
 
           {/* Controls & Nav Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             
-            {/* New DSA Notes Hub Link */}
+            {/* 300 Solved Examples Hub Link */}
+            <Link
+              href="/examples"
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 transition-all shadow-sm"
+              title="View 300 Solved Examples Hub (150 Problems x 2 Test Cases)"
+            >
+              <Layers className="w-4 h-4 text-cyan-400" />
+              <span>{isBengali ? "৩০০ Examples Hub" : "300 Examples"}</span>
+            </Link>
+
+            {/* DSA Notes Hub Link */}
             <Link
               href="/notes"
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition-all shadow-sm"
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition-all shadow-sm"
               title="DSA Master Notes (5-Year-Old Child Explanations)"
             >
               <BookOpen className="w-4 h-4 text-amber-400" />
@@ -92,7 +102,7 @@ export default function Header({ onSearchChange, searchTerm = '' }: HeaderProps)
             {/* Dashboard Link */}
             <Link 
               href="/dashboard" 
-              className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white bg-slate-900/60 hover:bg-slate-800/80 border border-white/5 transition-all"
+              className="hidden lg:flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white bg-slate-900/60 hover:bg-slate-800/80 border border-white/5 transition-all"
             >
               <Bookmark className="w-4 h-4 text-indigo-400" />
               <span>{isBengali ? "ড্যাশবোর্ড" : "Progress"}</span>
@@ -101,7 +111,7 @@ export default function Header({ onSearchChange, searchTerm = '' }: HeaderProps)
             {/* Language Toggle (EN / বাংলা) */}
             <button
               onClick={toggleLang}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-amber-500/10 to-indigo-500/10 hover:from-amber-500/20 hover:to-indigo-500/20 text-amber-300 border border-amber-500/30 transition-all shadow-sm"
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-gradient-to-r from-amber-500/10 to-indigo-500/10 hover:from-amber-500/20 hover:to-indigo-500/20 text-amber-300 border border-amber-500/30 transition-all shadow-sm"
               title="Toggle Language (English / বাংলা)"
             >
               <Globe className="w-4 h-4 text-cyan-400" />
@@ -128,7 +138,7 @@ export default function Header({ onSearchChange, searchTerm = '' }: HeaderProps)
             ) : (
               <button
                 onClick={() => setIsAuthOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-amber-600 to-indigo-600 hover:from-amber-500 hover:to-indigo-500 text-white shadow-lg shadow-amber-500/25 transition-all"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-gradient-to-r from-amber-600 to-indigo-600 hover:from-amber-500 hover:to-indigo-500 text-white shadow-lg shadow-amber-500/25 transition-all"
               >
                 <User className="w-4 h-4" />
                 <span>{isBengali ? "লগইন" : "Sign In"}</span>
