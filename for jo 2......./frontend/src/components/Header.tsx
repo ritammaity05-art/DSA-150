@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
-import { Search, Globe, Code2, User, LogOut, Bookmark, Sparkles, Sun, Moon } from 'lucide-react';
+import { Search, Globe, Code2, User, LogOut, Bookmark, Sparkles, Sun, Moon, BookOpen } from 'lucide-react';
 import AuthModal from './AuthModal';
 
 interface HeaderProps {
@@ -60,6 +60,16 @@ export default function Header({ onSearchChange, searchTerm = '' }: HeaderProps)
           {/* Controls & Nav Actions */}
           <div className="flex items-center gap-3">
             
+            {/* New DSA Notes Hub Link */}
+            <Link
+              href="/notes"
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition-all shadow-sm"
+              title="DSA Master Notes (5-Year-Old Child Explanations)"
+            >
+              <BookOpen className="w-4 h-4 text-amber-400" />
+              <span>{isBengali ? "নোটস Hub" : "DSA Notes"}</span>
+            </Link>
+
             {/* Dark / Light Mode Toggle Button */}
             <button
               onClick={toggleTheme}
