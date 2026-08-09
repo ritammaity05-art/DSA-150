@@ -7,7 +7,7 @@ import ProblemCard from '@/components/ProblemCard';
 import { fetchDashboardStats, fetchProblems, DashboardStats, ProblemListItem } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
-import { Bookmark, Star, CheckCircle2, Trophy, Clock, ArrowLeft, Layers, Sparkles } from 'lucide-react';
+import { Bookmark, Star, CheckCircle2, Trophy, Clock, ArrowLeft, Layers, Sparkles, Code } from 'lucide-react';
 
 export default function DashboardPage() {
   const { isBengali } = useLanguage();
@@ -41,6 +41,49 @@ export default function DashboardPage() {
   const completedCount = stats?.stats.total_completed || 0;
   const percentage = Math.round((completedCount / total) * 100);
 
+  const languageTrackers = [
+    {
+      lang: "C++ (Default)",
+      color: "text-cyan-400 border-cyan-500/30",
+      skills: [
+        { name: "Arrays & Vectors", status: "✓ Completed" },
+        { name: "Loops & Statements", status: "✓ Completed" },
+        { name: "unordered_map", status: "◐ In Progress" },
+        { name: "Pointers & References", status: "○ Learning" }
+      ]
+    },
+    {
+      lang: "Python",
+      color: "text-amber-400 border-amber-500/30",
+      skills: [
+        { name: "Lists & Slicing", status: "✓ Completed" },
+        { name: "For in Range Loops", status: "✓ Completed" },
+        { name: "Dictionaries {}", status: "◐ In Progress" },
+        { name: "Recursion Functions", status: "○ Learning" }
+      ]
+    },
+    {
+      lang: "Java",
+      color: "text-rose-400 border-rose-500/30",
+      skills: [
+        { name: "Primitive Arrays", status: "✓ Completed" },
+        { name: "For Loops", status: "✓ Completed" },
+        { name: "HashMap<K, V>", status: "◐ In Progress" },
+        { name: "OOP Classes", status: "○ Learning" }
+      ]
+    },
+    {
+      lang: "JavaScript",
+      color: "text-emerald-400 border-emerald-500/30",
+      skills: [
+        { name: "Arrays []", status: "✓ Completed" },
+        { name: "For Loops", status: "✓ Completed" },
+        { name: "Map() & Objects", status: "◐ In Progress" },
+        { name: "Arrow Functions", status: "○ Learning" }
+      ]
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-slate-950 text-gray-100 flex flex-col font-sans">
       
@@ -56,7 +99,7 @@ export default function DashboardPage() {
               <span>{isBengali ? "হোম পেজে ফিরে যান" : "Back to Home"}</span>
             </Link>
             <h1 className="text-3xl font-extrabold text-white tracking-tight">
-              {isBengali ? "আপনার শিক্ষা ও অগ্রগতি ড্যাশবোর্ড" : "Learning Progress Dashboard"}
+              {isBengali ? "আপনার শিক্ষা ও ল্যাঙ্গুয়েজ ট্র্যাকিং ড্যাশবোর্ড" : "Learning & Language Progress Dashboard"}
             </h1>
           </div>
 
@@ -121,6 +164,34 @@ export default function DashboardPage() {
 
         </div>
 
+        {/* 🧩 Language Mastery Progress Tracking Section */}
+        <div className="space-y-6">
+          <div className="flex items-center gap-2 text-lg font-bold text-white">
+            <Code className="w-5 h-5 text-cyan-400" />
+            <span>{isBengali ? "🧩 ল্যাঙ্গুয়েজ দক্ষতা ট্র্যাকিং (Language Mastery Progress)" : "🧩 Language Mastery Progress Tracking"}</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {languageTrackers.map((t, idx) => (
+              <div key={idx} className={`glass-panel p-6 rounded-2xl border ${t.color} space-y-4`}>
+                <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                  <h4 className="text-sm font-bold text-white font-mono">{t.lang}</h4>
+                  <span className="text-[10px] bg-slate-900 px-2 py-0.5 rounded text-gray-300">Tracked</span>
+                </div>
+
+                <div className="space-y-2 text-xs font-mono">
+                  {t.skills.map((s, sIdx) => (
+                    <div key={sIdx} className="flex items-center justify-between text-gray-300">
+                      <span>{s.name}</span>
+                      <span className="text-emerald-400 font-bold">{s.status}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Revision Queue & Favorites Section */}
         <div className="space-y-6">
           <div className="flex items-center gap-2 text-lg font-bold text-white">
@@ -149,7 +220,7 @@ export default function DashboardPage() {
       </main>
 
       <footer className="border-t border-white/10 py-8 text-center text-xs font-bold text-cyan-400">
-        150 STRICKs • POWERED BY RITAM • Progress Tracker
+        150 STRICKs • POWERED BY RITAM • Language Progress Tracker
       </footer>
 
     </div>

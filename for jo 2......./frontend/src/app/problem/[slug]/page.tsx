@@ -8,11 +8,15 @@ import VisualDryRun from '@/components/VisualDryRun';
 import CodeViewer from '@/components/CodeViewer';
 import HintAccordion from '@/components/HintAccordion';
 import InteractiveActions from '@/components/InteractiveActions';
+import CodeComparisonModal from '@/components/CodeComparisonModal';
+import EmergencyCodeModal from '@/components/EmergencyCodeModal';
+import PracticeEditor from '@/components/PracticeEditor';
+import LanguageLearningMode from '@/components/LanguageLearningMode';
 import { fetchProblemDetail, ProblemDetail } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
 import { 
   ArrowLeft, Zap, Layers, CheckCircle2, AlertCircle, Sparkles, 
-  HelpCircle, Compass, ShieldCheck, Flame, BookOpen, Check, Play, FileCode, ListOrdered, Baby, Smile
+  HelpCircle, Compass, ShieldCheck, Flame, BookOpen, Check, Play, FileCode, ListOrdered, Baby, Smile, Code, Brain
 } from 'lucide-react';
 
 export default function ProblemDetailPage() {
@@ -23,6 +27,14 @@ export default function ProblemDetailPage() {
   const [problem, setProblem] = useState<ProblemDetail | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Modals state
+  const [isCompareOpen, setIsCompareOpen] = useState(false);
+  const [isEmergencyOpen, setIsEmergencyOpen] = useState(false);
+
+  // Mini quiz state
+  const [selectedQuizOption, setSelectedQuizOption] = useState<number | null>(null);
+  const [quizSubmitted, setQuizSubmitted] = useState<boolean>(false);
 
   useEffect(() => {
     if (!slug) return;
@@ -47,7 +59,7 @@ export default function ProblemDetailPage() {
           <div className="flex flex-col items-center gap-4">
             <div className="w-12 h-12 rounded-full border-4 border-amber-400 border-t-transparent animate-spin" />
             <p className="text-gray-400 font-mono text-sm animate-pulse">
-              {isBengali ? "সমস্যা ও সহজ ব্যাখ্যা লোড হচ্ছে..." : "Loading problem breakdown & 5-year-old child stories..."}
+              {isBengali ? "সমস্যা ও ১৯-ধাপের লজিক লোড হচ্ছে..." : "Loading 19-Step Structured Flow & Algorithms..."}
             </p>
           </div>
         </div>
@@ -93,27 +105,12 @@ export default function ProblemDetailPage() {
   const goldenRule = problem.easy_explanation || problem.analogy || "Focus on key invariants to simplify logic.";
   const childStory = problem.eli10_explanation || problem.analogy || "Imagine matching candies with a friend step by step!";
 
-  const example1 = {
-    input: "nums = [1, 4, 1, 2]",
-    output: "[1, 4, 1, 2, 1, 4, 1, 2]",
-    steps: [
-      { line: "Line 1: ans[0] = nums[0] -> 1", desc: isBengali ? "Index 0 এর মান 1 প্রথম অর্ধে ans[0] = 1 এবং দ্বিতীয় অর্ধে ans[0+4] = 1 বসানো হলো।" : "Index 0: Value 1 is copied to ans[0] = 1 and ans[4] = 1." },
-      { line: "Line 2: ans[1] = nums[1] -> 4", desc: isBengali ? "Index 1 এর মান 4 প্রথম অর্ধে ans[1] = 4 এবং দ্বিতীয় অর্ধে ans[1+4] = 4 বসানো হলো।" : "Index 1: Value 4 is copied to ans[1] = 4 and ans[5] = 4." },
-      { line: "Line 3: ans[2] = nums[2] -> 1", desc: isBengali ? "Index 2 এর মান 1 প্রথম অর্ধে ans[2] = 1 এবং দ্বিতীয় অর্ধে ans[2+4] = 1 বসানো হলো।" : "Index 2: Value 1 is copied to ans[2] = 1 and ans[6] = 1." },
-      { line: "Line 4: ans[3] = nums[3] -> 2", desc: isBengali ? "Index 3 এর মান 2 প্রথম অর্ধে ans[3] = 2 এবং দ্বিতীয় অর্ধে ans[3+4] = 2 বসানো হলো।" : "Index 3: Value 2 is copied to ans[3] = 2 and ans[7] = 2." }
-    ]
-  };
-
-  const example2 = {
-    input: "nums = [22, 21, 20, 1]",
-    output: "[22, 21, 20, 1, 22, 21, 20, 1]",
-    steps: [
-      { line: "Line 1: ans[0] = nums[0] -> 22", desc: isBengali ? "Index 0 এর মান 22 প্রথম অর্ধে ans[0] = 22 এবং দ্বিতীয় অর্ধে ans[0+4] = 22 বসানো হলো।" : "Index 0: Value 22 is copied to ans[0] = 22 and ans[4] = 22." },
-      { line: "Line 2: ans[1] = nums[1] -> 21", desc: isBengali ? "Index 1 এর মান 21 প্রথম অর্ধে ans[1] = 21 এবং দ্বিতীয় অর্ধে ans[1+4] = 21 বসানো হলো।" : "Index 1: Value 21 is copied to ans[1] = 21 and ans[5] = 21." },
-      { line: "Line 3: ans[2] = nums[2] -> 20", desc: isBengali ? "Index 2 এর মান 20 প্রথম অর্ধে ans[2] = 20 এবং দ্বিতীয় অর্ধে ans[2+4] = 20 বসানো হলো।" : "Index 2: Value 20 is copied to ans[2] = 20 and ans[6] = 20." },
-      { line: "Line 4: ans[3] = nums[3] -> 1", desc: isBengali ? "Index 3 এর মান 1 প্রথম অর্ধে ans[3] = 1 এবং দ্বিতীয় অর্ধে ans[3+4] = 1 বসানো হলো।" : "Index 3: Value 1 is copied to ans[3] = 1 and ans[7] = 1." }
-    ]
-  };
+  const pseudocodeText = `FOR each element item in array:
+    needed_value = target - item
+    IF needed_value exists in our notepad:
+        RETURN pair (notepad[needed_value], current_position)
+    ELSE:
+        SAVE current_position into notepad[item]`;
 
   return (
     <div className="min-h-screen bg-slate-950 text-gray-100 flex flex-col font-sans">
@@ -133,10 +130,9 @@ export default function ProblemDetailPage() {
             <span>{isBengali ? "সব প্রবলেমে ফিরে যান" : "Back to NeetCode 150 List"}</span>
           </Link>
 
-          {/* Roadmap Track Badge */}
           <div className="flex items-center gap-2">
             <span className="px-3 py-1 text-xs font-bold rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-mono">
-              NeetCode 150 Roadmap Track
+              19-Step Structured Algorithm Flow
             </span>
             <span className="px-3 py-1 text-xs font-bold rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 font-mono">
               Powered by Ritam
@@ -144,7 +140,28 @@ export default function ProblemDetailPage() {
           </div>
         </div>
 
-        {/* Problem Title & Meta Info Header */}
+        {/* Action Triggers Bar (Compare Languages + Emergency Code Modal) */}
+        <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-slate-900 border border-white/10 shadow-lg">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsCompareOpen(true)}
+              className="px-4 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 font-bold text-xs flex items-center gap-2 transition-all"
+            >
+              <Code className="w-4 h-4 text-cyan-400" />
+              <span>{isBengali ? "🔍 কোড তুলনা মোড (Compare 4 Languages)" : "🔍 Compare Languages Side-by-Side"}</span>
+            </button>
+          </div>
+
+          <button
+            onClick={() => setIsEmergencyOpen(true)}
+            className="px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 font-bold text-xs flex items-center gap-2 transition-all"
+          >
+            <HelpCircle className="w-4 h-4 text-rose-400 animate-pulse" />
+            <span>{isBengali ? "😵 আমি এই কোডটি বুঝতে পারছি না" : "😵 I Don't Understand This Code"}</span>
+          </button>
+        </div>
+
+        {/* STEP 1 & STEP 2: Problem Story & Title Header */}
         <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/10 space-y-6 bg-slate-950/90 shadow-2xl">
           
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
@@ -168,195 +185,253 @@ export default function ProblemDetailPage() {
               </div>
             </div>
 
-            {/* Topic Notes Link */}
             <div className="flex items-center gap-2">
               <Link
                 href="/notes"
                 className="px-4 py-2 rounded-xl text-xs font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition-all flex items-center gap-2"
               >
                 <BookOpen className="w-4 h-4 text-amber-400" />
-                <span>{isBengali ? "DSA বইয়ের নোটস দেখুন" : "View Topic Notes"}</span>
+                <span>{isBengali ? "DSA বইয়ের নোটস" : "View Topic Notes"}</span>
               </Link>
             </div>
           </div>
 
-          {/* 👶 5-Year-Old Child Explanation Mode Banner for Absolute Beginners */}
+          {/* STEP 3: Real-Life 5-Year-Old Child Story Analogy */}
           <div className="p-6 rounded-3xl bg-gradient-to-r from-amber-500/20 via-pink-500/20 to-purple-500/20 border border-amber-400/50 shadow-2xl space-y-3">
             <div className="flex items-center gap-2 text-amber-300 text-xs font-black uppercase tracking-wider">
               <Smile className="w-5 h-5 text-amber-400 animate-bounce" />
-              <span>{isBengali ? "👶 ০% কোডিং জানা মানুষের জন্য ৫ বছরের বাচ্চার গল্পে ব্যাখ্যা (Zero-Knowledge Beginner Story)" : "👶 Zero-Knowledge Beginner Story (5-Year-Old Child Mode)"}</span>
+              <span>{isBengali ? "STEP 3: 👶 বাস্তব জীবনের গল্প (Real-Life Child Analogy)" : "STEP 3: 👶 Real-Life 5-Year-Old Child Analogy"}</span>
             </div>
             <p className="text-sm sm:text-base font-semibold text-amber-100 leading-relaxed font-sans">
               {childStory}
             </p>
           </div>
 
-          {/* ⚡ 10-Second Golden Rule Banner */}
-          <div className="p-5 rounded-2xl bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-indigo-500/20 border border-amber-400/40 shadow-xl space-y-2">
-            <div className="flex items-center gap-2 text-amber-300 text-xs font-extrabold uppercase tracking-wider">
-              <Zap className="w-5 h-5 text-amber-400 animate-pulse" />
-              <span>{isBengali ? "১০-সেকেন্ডের গোল্ডেন ট্রিক (10-Second Golden Rule)" : "10-Second Golden Rule Trick"}</span>
+          {/* STEP 4: Think Yourself Interactive Prompt */}
+          <div className="p-5 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 space-y-2">
+            <div className="flex items-center gap-2 text-indigo-300 text-xs font-bold uppercase tracking-wider">
+              <Brain className="w-4 h-4 text-indigo-400" />
+              <span>{isBengali ? "STEP 4: 🧠 নিজে একবার চিন্তা করুন (Think Yourself)" : "STEP 4: 🧠 Think Yourself Mental Prompt"}</span>
             </div>
-            <p className="text-sm font-semibold text-amber-100 leading-relaxed font-sans">
-              {goldenRule}
+            <p className="text-xs text-indigo-100 leading-relaxed">
+              {isBengali
+                ? "কোড দেখার আগে ১ মুহূর্ত ভাবুন: আপনি কীভাবে ২টি সংখ্যা বেছে নেবেন যেন তাদের যোগফল কাঙ্ক্ষিত সংখ্যার সমান হয়?"
+                : "Before scrolling down to code: How would you manually pair up items on a table without checking every pair twice?"}
             </p>
           </div>
 
-          {/* Explicit Example 1 and Example 2 Solved Cards DIRECTLY ON WEBSITE */}
-          <div className="space-y-4 pt-4 border-t border-white/10">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-extrabold uppercase tracking-wider text-amber-400 flex items-center gap-2">
-                <ListOrdered className="w-4 h-4 text-amber-400" />
-                <span>{isBengali ? "উভয় টেস্ট কেসের লাইন-বাই-লাইন সমাধান (Example 1 & Example 2 Line-by-Line Breakdown)" : "Explicit Example 1 & Example 2 Line-by-Line Solved"}</span>
-              </h3>
-              <span className="text-xs font-mono text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-full border border-cyan-500/20">
-                NeetCode 150 Test Cases
+          {/* STEP 5: Progressive Hints Accordion */}
+          <section className="space-y-3">
+            <div className="text-xs font-bold uppercase tracking-wider text-amber-400">
+              STEP 5: 💡 Progressive Hints (3-Stage Hints)
+            </div>
+            <HintAccordion problem={problem} />
+          </section>
+
+          {/* STEP 6, 7 & 8: Brute Force, Better, and Optimal Approaches */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-white/10 font-sans text-xs">
+            <div className="p-4 rounded-2xl bg-slate-900 border border-white/10 space-y-2">
+              <span className="px-2.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30 text-[10px]">
+                STEP 6: Brute Force O(N²)
               </span>
+              <p className="text-gray-300 leading-relaxed">
+                {isBengali ? "ডাবল লুপ চালিয়ে প্রতিটি সংখ্যার সাথে অন্য সব সংখ্যা চেক করা।" : "Check every possible pair using nested loops."}
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
-              {/* Example 1 Card */}
-              <div className="p-5 rounded-2xl bg-slate-900/90 border border-white/10 space-y-4 font-mono shadow-xl relative overflow-hidden">
-                <div className="flex items-center justify-between pb-2 border-b border-white/10">
-                  <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
-                    Example 1:
-                  </span>
-                  <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                    Test Case 1 Solved ✓
-                  </span>
-                </div>
-
-                <div className="space-y-2 text-xs">
-                  <div>
-                    <span className="text-sky-400 font-bold">Input: </span>
-                    <span className="text-gray-200 bg-slate-950 px-2 py-1 rounded border border-white/5 inline-block font-mono">
-                      {example1.input}
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="text-emerald-400 font-bold">Output: </span>
-                    <span className="text-emerald-300 bg-slate-950 px-2 py-1 rounded border border-white/5 inline-block font-mono font-bold">
-                      {example1.output}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Example 1 Line-by-Line Step Breakdown */}
-                <div className="space-y-2 pt-2 border-t border-white/5 font-sans">
-                  <span className="text-xs font-bold text-amber-400 block mb-1">
-                    {isBengali ? "Example 1 এর ধাপে ধাপে এক্সিকিউশন breakdown:" : "Example 1 Line-by-Line Breakdown:"}
-                  </span>
-
-                  {example1.steps.map((st, idx) => (
-                    <div key={idx} className="p-2.5 rounded-xl bg-slate-950 border border-white/5 space-y-1 font-mono text-xs">
-                      <div className="text-cyan-300 font-bold">{st.line}</div>
-                      <div className="text-gray-300 font-sans text-[11px] leading-relaxed">{st.desc}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Example 2 Card */}
-              <div className="p-5 rounded-2xl bg-slate-900/90 border border-white/10 space-y-4 font-mono shadow-xl relative overflow-hidden">
-                <div className="flex items-center justify-between pb-2 border-b border-white/10">
-                  <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
-                    Example 2:
-                  </span>
-                  <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                    Test Case 2 Solved ✓
-                  </span>
-                </div>
-
-                <div className="space-y-2 text-xs">
-                  <div>
-                    <span className="text-sky-400 font-bold">Input: </span>
-                    <span className="text-gray-200 bg-slate-950 px-2 py-1 rounded border border-white/5 inline-block font-mono">
-                      {example2.input}
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="text-emerald-400 font-bold">Output: </span>
-                    <span className="text-emerald-300 bg-slate-950 px-2 py-1 rounded border border-white/5 inline-block font-mono font-bold">
-                      {example2.output}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Example 2 Line-by-Line Step Breakdown */}
-                <div className="space-y-2 pt-2 border-t border-white/5 font-sans">
-                  <span className="text-xs font-bold text-amber-400 block mb-1">
-                    {isBengali ? "Example 2 এর ধাপে ধাপে এক্সিকিউশন breakdown:" : "Example 2 Line-by-Line Breakdown:"}
-                  </span>
-
-                  {example2.steps.map((st, idx) => (
-                    <div key={idx} className="p-2.5 rounded-xl bg-slate-950 border border-white/5 space-y-1 font-mono text-xs">
-                      <div className="text-cyan-300 font-bold">{st.line}</div>
-                      <div className="text-gray-300 font-sans text-[11px] leading-relaxed">{st.desc}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
+            <div className="p-4 rounded-2xl bg-slate-900 border border-white/10 space-y-2">
+              <span className="px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30 text-[10px]">
+                STEP 7: Better Approach O(N log N)
+              </span>
+              <p className="text-gray-300 leading-relaxed">
+                {isBengali ? "অ্যারে সর্ট করে টু পয়েন্টার ব্যবহার করা।" : "Sort array first and use converging Two Pointers."}
+              </p>
             </div>
+
+            <div className="p-4 rounded-2xl bg-slate-900 border border-white/10 space-y-2">
+              <span className="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30 text-[10px]">
+                STEP 8: Optimal Approach O(N)
+              </span>
+              <p className="text-gray-300 leading-relaxed">
+                {isBengali ? "হ্যাশম্যাপ ব্যবহার করে ১ পাসেই ও(১) সার্চ সম্পন্ন করা।" : "Use HashMap for instant O(1) single-pass lookups."}
+              </p>
+            </div>
+          </div>
+
+          {/* STEP 9: Why This Data Structure? */}
+          <div className="p-5 rounded-2xl bg-slate-900 border border-cyan-500/30 space-y-2">
+            <div className="text-xs font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-2">
+              <Compass className="w-4 h-4 text-cyan-400" />
+              <span>STEP 9: 🔍 Why This Data Structure Was Chosen?</span>
+            </div>
+            <p className="text-xs text-gray-300 leading-relaxed">
+              {isBengali
+                ? "আমরা হ্যাশম্যাপ বেছে নিয়েছি কারণ এটি ও(১) কনস্ট্যান্ট টাইমে অতীতে দেখা সংখ্যাগুলো সাথে সাথে খুঁজে বের করতে পারে।"
+                : "We selected HashMap because it eliminates nested loops by providing instant O(1) constant time key lookups."}
+            </p>
           </div>
 
         </div>
 
-        {/* 🎬 Visual Dry Run Player Simulator with Both Example 1 & Example 2 */}
+        {/* STEP 10: Language-Independent Visual Dry Run */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
-              <span>🎬</span>
-              <span>{isBengali ? "ইন্টারেক্টিভ ভিজ্যুয়াল ড্রাই রান (Both Example 1 & 2)" : "Interactive Visual Dry Run (Example 1 & Example 2)"}</span>
+              <span>🎬 STEP 10:</span>
+              <span>{isBengali ? "ল্যাঙ্গুয়েজ-স্বাধীন ভিজ্যুয়াল ড্রাই রান" : "Language-Independent Visual Dry Run"}</span>
             </h2>
             <span className="text-xs font-mono text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
-              Multi-Example Test Case Player
+              Universal Algorithm Player
             </span>
           </div>
 
           <VisualDryRun steps={problem.dry_run_steps} extraExample={problem.extra_example} />
         </section>
 
-        {/* 💻 Multi-Language Code Viewer (Python, C++, Java, JS) */}
+        {/* STEP 11: Language-Independent Pseudocode */}
+        <section className="glass-panel p-6 rounded-3xl border border-white/10 bg-slate-950/90 shadow-xl space-y-3 font-mono text-xs">
+          <div className="flex items-center justify-between border-b border-white/10 pb-3">
+            <div className="flex items-center gap-2 text-cyan-300 font-bold">
+              <FileCode className="w-4 h-4 text-cyan-400" />
+              <span>STEP 11: 📝 Language-Independent Pseudocode</span>
+            </div>
+            <span className="text-[10px] text-gray-400 bg-slate-900 px-2.5 py-0.5 rounded border border-white/5">
+              Logic Before Syntax
+            </span>
+          </div>
+
+          <pre className="p-4 rounded-2xl bg-slate-900 text-cyan-200 leading-relaxed overflow-x-auto">
+            {pseudocodeText}
+          </pre>
+        </section>
+
+        {/* STEP 12, 13 & 14: Multi-Language Code Viewer (C++ Default, Python, Java, JS) */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
-              <span>💻</span>
-              <span>{isBengali ? "মাল্টি-ল্যাঙ্গুয়েজ সমাধান (Code Solutions & Breakdown)" : "Multi-Language Solutions & Line Breakdown"}</span>
+              <span>💻 STEP 12-14:</span>
+              <span>{isBengali ? "মাল্টি-ল্যাঙ্গুয়েজ সলিউশন (C++ Default, Python, Java, JS)" : "Multi-Language Code & Syntax Inspector"}</span>
             </h2>
             <span className="text-xs font-mono text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">
-              Python • C++ • Java • JavaScript
+              Default: C++
             </span>
           </div>
+
+          {/* Language Concept Highlights */}
+          <LanguageLearningMode topicName={problem.topic_name} />
 
           <CodeViewer problem={problem} />
         </section>
 
-        {/* 3-Stage Progressive Hint System */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
-              <span>💡</span>
-              <span>{isBengali ? "৩-ধাপের প্রোগ্রেসিভ হিন্টস (Progressive Hints)" : "3-Stage Progressive Hints"}</span>
-            </h2>
+        {/* STEP 16 & 17: Complexity & Common Mistakes */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="glass-panel p-6 rounded-3xl border border-white/10 bg-slate-950/90 space-y-3 font-sans">
+            <h3 className="text-sm font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+              <Zap className="w-4 h-4" />
+              <span>STEP 16: Time & Space Complexity Analysis</span>
+            </h3>
+            <div className="space-y-2 text-xs text-gray-300 font-mono">
+              <div className="p-3 rounded-xl bg-slate-900 border border-white/5">
+                <span className="text-emerald-400 font-bold">Time Complexity: {problem.time_complexity}</span>
+                <p className="text-gray-400 font-sans mt-1">{problem.time_complexity_reason}</p>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-900 border border-white/5">
+                <span className="text-cyan-400 font-bold">Space Complexity: {problem.space_complexity}</span>
+                <p className="text-gray-400 font-sans mt-1">{problem.space_complexity_reason}</p>
+              </div>
+            </div>
           </div>
 
-          <HintAccordion problem={problem} />
+          <div className="glass-panel p-6 rounded-3xl border border-white/10 bg-slate-950/90 space-y-3 font-sans">
+            <h3 className="text-sm font-bold text-rose-400 uppercase tracking-wider flex items-center gap-2">
+              <AlertCircle className="w-4 h-4" />
+              <span>STEP 17: Common Mistakes to Avoid</span>
+            </h3>
+            <div className="space-y-2 text-xs text-gray-300">
+              {problem.common_mistakes.map((m, idx) => (
+                <div key={idx} className="p-3 rounded-xl bg-slate-900 border border-white/5 space-y-1">
+                  <div className="font-bold text-rose-300">{m.title}</div>
+                  <div className="text-gray-400">{m.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
 
-        {/* Interactive Action Booster (ELI10 Modal, Simpler Explanation, Practice) */}
+        {/* STEP 18: Interactive Mini Quiz */}
+        <section className="glass-panel p-6 sm:p-8 rounded-3xl border border-amber-500/30 bg-slate-950/90 shadow-xl space-y-4 font-sans">
+          <div className="flex items-center gap-2 text-amber-400 font-bold text-sm uppercase tracking-wider">
+            <Sparkles className="w-4 h-4" />
+            <span>STEP 18: 🏆 Mini Comprehension Quiz</span>
+          </div>
+
+          <div className="space-y-3 text-xs">
+            <p className="text-white font-semibold">
+              Question: Why is HashMap lookup faster than scanning an array sequentially?
+            </p>
+
+            <div className="space-y-2">
+              {[
+                "HashMap uses an instant O(1) hash function to compute the exact bucket index.",
+                "HashMap sorts all elements in alphabetical order.",
+                "HashMap uses a double loop to check pairs."
+              ].map((opt, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => { setSelectedQuizOption(idx); setQuizSubmitted(true); }}
+                  className={`w-full text-left p-3 rounded-xl border transition-all ${
+                    selectedQuizOption === idx
+                      ? idx === 0 
+                        ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200' 
+                        : 'bg-rose-500/20 border-rose-400 text-rose-200'
+                      : 'bg-slate-900 border-white/5 hover:border-white/20 text-gray-300'
+                  }`}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+
+            {quizSubmitted && (
+              <div className={`p-3 rounded-xl text-xs font-bold ${selectedQuizOption === 0 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}`}>
+                {selectedQuizOption === 0 ? "🎉 Correct! HashMap hash calculation enables instant O(1) retrieval." : "❌ Incorrect. Try again!"}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* STEP 19: Interactive Practice Mode (Write Code Yourself) */}
+        <section className="space-y-4">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+            STEP 19: 🧪 Interactive Practice Mode (Solve Again Without Looking)
+          </div>
+          <PracticeEditor problem={problem} />
+        </section>
+
+        {/* Interactive Action Booster */}
         <section className="space-y-4">
           <InteractiveActions problem={problem} />
         </section>
 
       </main>
 
+      {/* Code Comparison Modal */}
+      <CodeComparisonModal 
+        isOpen={isCompareOpen} 
+        onClose={() => setIsCompareOpen(false)} 
+        title={problem.title} 
+      />
+
+      {/* Emergency Code Explanation Modal */}
+      <EmergencyCodeModal 
+        isOpen={isEmergencyOpen} 
+        onClose={() => setIsEmergencyOpen(false)} 
+        title={problem.title} 
+      />
+
       {/* Footer */}
       <footer className="border-t border-white/10 py-8 bg-slate-950 text-center text-xs font-bold text-cyan-400">
-        150 STRICKs • POWERED BY RITAM • NeetCode 150 Complete Roadmap Track
+        150 STRICKs • POWERED BY RITAM • 19-Step Multi-Language DSA Learning System
       </footer>
 
     </div>
