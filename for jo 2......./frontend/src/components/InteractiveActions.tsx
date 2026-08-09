@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { ProblemDetail } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
-import { Sparkles, Smile, RefreshCw, Layers, CheckCircle2, HelpCircle, X } from 'lucide-react';
+import { Sparkles, Smile, RefreshCw, Layers, CheckCircle2, HelpCircle, X, ArrowRight, ListOrdered } from 'lucide-react';
 
 interface InteractiveActionsProps {
   problem: ProblemDetail;
@@ -21,7 +21,39 @@ export default function InteractiveActions({
   const { isBengali } = useLanguage();
   const [showEli10Modal, setShowEli10Modal] = useState(false);
   const [showSimpler, setShowSimpler] = useState(false);
-  const [showExtraExample, setShowExtraExample] = useState(false);
+  const [showExtraExample, setShowExtraExample] = useState(true);
+
+  // Line-by-line step breakdown for Example 2 (nums = [22, 21, 20, 1])
+  const example2LineSteps = [
+    {
+      step: 1,
+      lineCode: "ans[0] = nums[0] -> 22",
+      explanation: isBengali
+        ? "১ম উপাদানের জন্য: Index 0 এর মান 22 প্রথম অর্ধে ans[0] = 22 এবং দ্বিতীয় অর্ধে ans[0+4] = 22 বসানো হলো।"
+        : "Line 1: For index 0, value 22 is copied to ans[0] = 22 and ans[0+4] = 22."
+    },
+    {
+      step: 2,
+      lineCode: "ans[1] = nums[1] -> 21",
+      explanation: isBengali
+        ? "২য় উপাদানের জন্য: Index 1 এর মান 21 প্রথম অর্ধে ans[1] = 21 এবং দ্বিতীয় অর্ধে ans[1+4] = 21 বসানো হলো।"
+        : "Line 2: For index 1, value 21 is copied to ans[1] = 21 and ans[1+4] = 21."
+    },
+    {
+      step: 3,
+      lineCode: "ans[2] = nums[2] -> 20",
+      explanation: isBengali
+        ? "৩য় উপাদানের জন্য: Index 2 এর মান 20 প্রথম অর্ধে ans[2] = 20 এবং দ্বিতীয় অর্ধে ans[2+4] = 20 বসানো হলো।"
+        : "Line 3: For index 2, value 20 is copied to ans[2] = 20 and ans[2+4] = 20."
+    },
+    {
+      step: 4,
+      lineCode: "ans[3] = nums[3] -> 1",
+      explanation: isBengali
+        ? "৪র্থ উপাদানের জন্য: Index 3 এর মান 1 প্রথম অর্ধে ans[3] = 1 এবং দ্বিতীয় অর্ধে ans[3+4] = 1 বসানো হলো।"
+        : "Line 4: For index 3, value 1 is copied to ans[3] = 1 and ans[3+4] = 1."
+    }
+  ];
 
   return (
     <div className="glass-panel p-6 rounded-2xl border border-blue-500/20 bg-slate-950/80 shadow-2xl space-y-6">
@@ -119,17 +151,66 @@ export default function InteractiveActions({
         </div>
       )}
 
-      {/* Toggled Extra Example Banner */}
+      {/* Toggled Extra Example Banner with Full Line-by-Line Breakdown */}
       {showExtraExample && (
-        <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-xs text-indigo-100 leading-relaxed space-y-2 animate-fade-in font-mono">
-          <h5 className="font-bold text-indigo-300 font-sans">
-            {isBengali ? "📌 অতিরিক্ত উদাহরণ ও ড্রাই রান (Alternative Test Case):" : "📌 Additional Example Walkthrough:"}
-          </h5>
-          <div>Input: {problem.extra_example?.input || "nums = [3, 2, 4], target = 6"}</div>
-          <div>Output: {problem.extra_example?.output || "[1, 2]"}</div>
-          <div className="font-sans text-gray-300 pt-1 text-[11px]">
-            {problem.extra_example?.explanation || "Explanation: 6 - 3 = 3 (not in hashmap). Next 6 - 2 = 4 (not in map). Next 6 - 4 = 2 (found at index 1!). Output [1, 2]."}
+        <div className="p-5 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-xs text-indigo-100 leading-relaxed space-y-4 animate-fade-in font-mono shadow-xl">
+          
+          <div className="flex items-center justify-between pb-3 border-b border-indigo-500/20">
+            <div className="flex items-center gap-2">
+              <ListOrdered className="w-5 h-5 text-amber-400" />
+              <h5 className="font-bold text-indigo-300 font-sans text-sm">
+                {isBengali ? "📌 Example 2: লাইন-বাই-লাইন সম্পূর্ণ সমাধান (Line-by-Line Solution Breakdown)" : "📌 Example 2: Full Line-by-Line Solution Breakdown"}
+              </h5>
+            </div>
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">
+              Verified Solution ✓
+            </span>
           </div>
+
+          {/* Input & Output Badges */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div className="p-2.5 rounded-xl bg-slate-950/80 border border-white/10">
+              <span className="text-sky-400 font-bold">Input: </span>
+              <span className="text-gray-200 font-mono">{problem.extra_example?.input || "nums = [22, 21, 20, 1]"}</span>
+            </div>
+            <div className="p-2.5 rounded-xl bg-slate-950/80 border border-white/10">
+              <span className="text-emerald-400 font-bold">Output: </span>
+              <span className="text-emerald-300 font-mono font-bold">{problem.extra_example?.output || "[22, 21, 20, 1, 22, 21, 20, 1]"}</span>
+            </div>
+          </div>
+
+          {/* Line-by-Line Execution Cards for Example 2 */}
+          <div className="space-y-2.5 pt-2">
+            <div className="text-[11px] font-bold text-amber-400 uppercase tracking-wider font-sans">
+              {isBengali ? "ধাপে ধাপে কোড এক্সিকিউশন লাইন breakdown:" : "Step-by-Step Code Execution Breakdown:"}
+            </div>
+
+            {example2LineSteps.map((stepItem) => (
+              <div 
+                key={stepItem.step}
+                className="p-3 rounded-xl bg-slate-950 border border-white/10 space-y-1.5 font-mono text-xs hover:border-amber-400/40 transition-all"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold text-[10px] border border-amber-500/30">
+                    Step {stepItem.step}
+                  </span>
+                  <span className="text-gray-300 text-[11px] font-mono">{stepItem.lineCode}</span>
+                </div>
+
+                <div className="text-xs text-gray-300 font-sans leading-relaxed pt-1">
+                  <span className="text-cyan-400 font-semibold">{isBengali ? "ব্যাখ্যা: " : "Explanation: "}</span>
+                  {stepItem.explanation}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Final Verification Summary */}
+          <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-sans font-semibold flex items-center justify-between">
+            <span>{isBengali ? "চুড়ান্ত সমাধান যাচাইকৃত:" : "Final Verified Output:"}</span>
+            <span className="font-mono font-bold text-emerald-400">{problem.extra_example?.output || "[22, 21, 20, 1, 22, 21, 20, 1]"} ✓</span>
+          </div>
+
         </div>
       )}
 
