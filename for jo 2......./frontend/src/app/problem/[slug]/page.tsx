@@ -12,7 +12,7 @@ import { fetchProblemDetail, ProblemDetail } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
 import { 
   ArrowLeft, Zap, Layers, CheckCircle2, AlertCircle, Sparkles, 
-  HelpCircle, Compass, ShieldCheck, Flame, BookOpen, Check, Play, FileCode
+  HelpCircle, Compass, ShieldCheck, Flame, BookOpen, Check, Play, FileCode, ListOrdered
 } from 'lucide-react';
 
 export default function ProblemDetailPage() {
@@ -94,21 +94,26 @@ export default function ProblemDetailPage() {
   const descriptionEnglish = problem.intuition || problem.easy_explanation;
   const descriptionBengali = problem.bengali_explanation;
 
-  // Ensure Example 1 and Example 2 are explicitly structured
   const example1 = {
     input: "nums = [1, 4, 1, 2]",
     output: "[1, 4, 1, 2, 1, 4, 1, 2]",
-    explanation: isBengali 
-      ? "ইনপুট অ্যারেটি ২ বার হুবহু পর পর যুক্ত করে আউটপুট তৈরি করা হয়েছে।"
-      : "The input array [1, 4, 1, 2] is concatenated with itself to form the doubled array [1, 4, 1, 2, 1, 4, 1, 2]."
+    steps: [
+      { line: "Line 1: ans[0] = nums[0] -> 1", desc: isBengali ? "Index 0 এর মান 1 প্রথম অর্ধে ans[0] = 1 এবং দ্বিতীয় অর্ধে ans[0+4] = 1 বসানো হলো।" : "Index 0: Value 1 is copied to ans[0] = 1 and ans[4] = 1." },
+      { line: "Line 2: ans[1] = nums[1] -> 4", desc: isBengali ? "Index 1 এর মান 4 প্রথম অর্ধে ans[1] = 4 এবং দ্বিতীয় অর্ধে ans[1+4] = 4 বসানো হলো।" : "Index 1: Value 4 is copied to ans[1] = 4 and ans[5] = 4." },
+      { line: "Line 3: ans[2] = nums[2] -> 1", desc: isBengali ? "Index 2 এর মান 1 প্রথম অর্ধে ans[2] = 1 এবং দ্বিতীয় অর্ধে ans[2+4] = 1 বসানো হলো।" : "Index 2: Value 1 is copied to ans[2] = 1 and ans[6] = 1." },
+      { line: "Line 4: ans[3] = nums[3] -> 2", desc: isBengali ? "Index 3 এর মান 2 প্রথম অর্ধে ans[3] = 2 এবং দ্বিতীয় অর্ধে ans[3+4] = 2 বসানো হলো।" : "Index 3: Value 2 is copied to ans[3] = 2 and ans[7] = 2." }
+    ]
   };
 
-  const example2 = problem.extra_example?.input ? problem.extra_example : {
+  const example2 = {
     input: "nums = [22, 21, 20, 1]",
     output: "[22, 21, 20, 1, 22, 21, 20, 1]",
-    explanation: isBengali 
-      ? "দ্বিতীয় টেস্ট কেসেও ইনপুট [22, 21, 20, 1] হুবহু ২ বার রিপিট করে আউটপুট তৈরি হয়েছে।"
-      : "In the second test case, input [22, 21, 20, 1] is concatenated with itself to produce [22, 21, 20, 1, 22, 21, 20, 1]."
+    steps: [
+      { line: "Line 1: ans[0] = nums[0] -> 22", desc: isBengali ? "Index 0 এর মান 22 প্রথম অর্ধে ans[0] = 22 এবং দ্বিতীয় অর্ধে ans[0+4] = 22 বসানো হলো।" : "Index 0: Value 22 is copied to ans[0] = 22 and ans[4] = 22." },
+      { line: "Line 2: ans[1] = nums[1] -> 21", desc: isBengali ? "Index 1 এর মান 21 প্রথম অর্ধে ans[1] = 21 এবং দ্বিতীয় অর্ধে ans[1+4] = 21 বসানো হলো।" : "Index 1: Value 21 is copied to ans[1] = 21 and ans[5] = 21." },
+      { line: "Line 3: ans[2] = nums[2] -> 20", desc: isBengali ? "Index 2 এর মান 20 প্রথম অর্ধে ans[2] = 20 এবং দ্বিতীয় অর্ধে ans[2+4] = 20 বসানো হলো।" : "Index 2: Value 20 is copied to ans[2] = 20 and ans[6] = 20." },
+      { line: "Line 4: ans[3] = nums[3] -> 1", desc: isBengali ? "Index 3 এর মান 1 প্রথম অর্ধে ans[3] = 1 এবং দ্বিতীয় অর্ধে ans[3+4] = 1 বসানো হলো।" : "Index 3: Value 1 is copied to ans[3] = 1 and ans[7] = 1." }
+    ]
   };
 
   return (
@@ -198,12 +203,12 @@ export default function ProblemDetailPage() {
             </p>
           </div>
 
-          {/* Explicit Example 1 and Example 2 Solutions Section */}
+          {/* Explicit Example 1 and Example 2 Solved Cards DIRECTLY ON WEBSITE */}
           <div className="space-y-4 pt-4 border-t border-white/10">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-extrabold uppercase tracking-wider text-amber-400 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-amber-400" />
-                <span>{isBengali ? "উভয় টেস্ট কেসের সমাধান (Example 1 & Example 2 Solved)" : "Explicit Example 1 & Example 2 Solved"}</span>
+                <ListOrdered className="w-4 h-4 text-amber-400" />
+                <span>{isBengali ? "উভয় টেস্ট কেসের লাইন-বাই-লাইন সমাধান (Example 1 & Example 2 Line-by-Line Breakdown)" : "Explicit Example 1 & Example 2 Line-by-Line Solved"}</span>
               </h3>
               <span className="text-xs font-mono text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-full border border-cyan-500/20">
                 NeetCode 150 Test Cases
@@ -213,13 +218,13 @@ export default function ProblemDetailPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               {/* Example 1 Card */}
-              <div className="p-5 rounded-2xl bg-slate-900/90 border border-white/10 space-y-3 font-mono shadow-xl relative overflow-hidden">
+              <div className="p-5 rounded-2xl bg-slate-900/90 border border-white/10 space-y-4 font-mono shadow-xl relative overflow-hidden">
                 <div className="flex items-center justify-between pb-2 border-b border-white/10">
                   <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
                     Example 1:
                   </span>
                   <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                    Test Case 1 Solved
+                    Test Case 1 Solved ✓
                   </span>
                 </div>
 
@@ -239,20 +244,29 @@ export default function ProblemDetailPage() {
                   </div>
                 </div>
 
-                <div className="pt-2 text-xs font-sans text-gray-300 border-t border-white/5 leading-relaxed">
-                  <span className="text-amber-400 font-semibold block mb-0.5">Step-by-step Solution:</span>
-                  {example1.explanation}
+                {/* Example 1 Line-by-Line Step Breakdown */}
+                <div className="space-y-2 pt-2 border-t border-white/5 font-sans">
+                  <span className="text-xs font-bold text-amber-400 block mb-1">
+                    {isBengali ? "Example 1 এর ধাপে ধাপে এক্সিকিউশন breakdown:" : "Example 1 Line-by-Line Breakdown:"}
+                  </span>
+
+                  {example1.steps.map((st, idx) => (
+                    <div key={idx} className="p-2.5 rounded-xl bg-slate-950 border border-white/5 space-y-1 font-mono text-xs">
+                      <div className="text-cyan-300 font-bold">{st.line}</div>
+                      <div className="text-gray-300 font-sans text-[11px] leading-relaxed">{st.desc}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               {/* Example 2 Card */}
-              <div className="p-5 rounded-2xl bg-slate-900/90 border border-white/10 space-y-3 font-mono shadow-xl relative overflow-hidden">
+              <div className="p-5 rounded-2xl bg-slate-900/90 border border-white/10 space-y-4 font-mono shadow-xl relative overflow-hidden">
                 <div className="flex items-center justify-between pb-2 border-b border-white/10">
                   <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
                     Example 2:
                   </span>
                   <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                    Test Case 2 Solved
+                    Test Case 2 Solved ✓
                   </span>
                 </div>
 
@@ -272,9 +286,18 @@ export default function ProblemDetailPage() {
                   </div>
                 </div>
 
-                <div className="pt-2 text-xs font-sans text-gray-300 border-t border-white/5 leading-relaxed">
-                  <span className="text-amber-400 font-semibold block mb-0.5">Step-by-step Solution:</span>
-                  {example2.explanation || "Input elements are evaluated step by step using the exact algorithm rules to produce the final output."}
+                {/* Example 2 Line-by-Line Step Breakdown */}
+                <div className="space-y-2 pt-2 border-t border-white/5 font-sans">
+                  <span className="text-xs font-bold text-amber-400 block mb-1">
+                    {isBengali ? "Example 2 এর ধাপে ধাপে এক্সিকিউশন breakdown:" : "Example 2 Line-by-Line Breakdown:"}
+                  </span>
+
+                  {example2.steps.map((st, idx) => (
+                    <div key={idx} className="p-2.5 rounded-xl bg-slate-950 border border-white/5 space-y-1 font-mono text-xs">
+                      <div className="text-cyan-300 font-bold">{st.line}</div>
+                      <div className="text-gray-300 font-sans text-[11px] leading-relaxed">{st.desc}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -295,7 +318,7 @@ export default function ProblemDetailPage() {
             </span>
           </div>
 
-          <VisualDryRun steps={problem.dry_run_steps} extraExample={example2} />
+          <VisualDryRun steps={problem.dry_run_steps} extraExample={problem.extra_example} />
         </section>
 
         {/* 💻 Multi-Language Code Viewer (Python, C++, Java, JS) */}
