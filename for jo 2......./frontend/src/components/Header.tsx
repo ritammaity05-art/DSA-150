@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
-import { Search, Globe, Code2, User, LogOut, Bookmark, Sparkles, Sun, Moon, BookOpen, Layers } from 'lucide-react';
+import { useZeroKnowledge } from '@/context/ZeroKnowledgeContext';
+import { Search, Globe, Code2, User, LogOut, Bookmark, Sparkles, Sun, Moon, BookOpen, Layers, Baby } from 'lucide-react';
 import AuthModal from './AuthModal';
 
 interface HeaderProps {
@@ -17,6 +18,7 @@ export default function Header({ onSearchChange, searchTerm = '' }: HeaderProps)
   const { lang, toggleLang, isBengali } = useLanguage();
   const { user, isAuthenticated, logout } = useAuth();
   const { theme, toggleTheme, isDark } = useTheme();
+  const { isZeroKnowledge, toggleZeroKnowledge } = useZeroKnowledge();
   const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   return (
@@ -60,6 +62,20 @@ export default function Header({ onSearchChange, searchTerm = '' }: HeaderProps)
           {/* Controls & Nav Actions */}
           <div className="flex items-center gap-2 sm:gap-3">
             
+            {/* 0% Knowledge Ultra-Beginner Mode Toggle */}
+            <button
+              onClick={toggleZeroKnowledge}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition-all shadow-sm ${
+                isZeroKnowledge
+                  ? 'bg-amber-400 text-slate-950 shadow-amber-500/25 scale-105 font-bold'
+                  : 'bg-slate-900 text-gray-400 border border-white/10 hover:text-white'
+              }`}
+              title="Toggle 0% Knowledge Ultra-Beginner Story Mode"
+            >
+              <Baby className="w-4 h-4 text-slate-950" />
+              <span>{isBengali ? "👶 0% কোডিং মোড" : "👶 0% Code Mode"}</span>
+            </button>
+
             {/* 300 Solved Examples Hub Link */}
             <Link
               href="/examples"
@@ -67,7 +83,7 @@ export default function Header({ onSearchChange, searchTerm = '' }: HeaderProps)
               title="View 300 Solved Examples Hub (150 Problems x 2 Test Cases)"
             >
               <Layers className="w-4 h-4 text-cyan-400" />
-              <span>{isBengali ? "৩০০ Examples Hub" : "300 Examples"}</span>
+              <span>{isBengali ? "৩০০ Examples" : "300 Examples"}</span>
             </Link>
 
             {/* DSA Notes Hub Link */}
@@ -98,15 +114,6 @@ export default function Header({ onSearchChange, searchTerm = '' }: HeaderProps)
                 </>
               )}
             </button>
-
-            {/* Dashboard Link */}
-            <Link 
-              href="/dashboard" 
-              className="hidden lg:flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white bg-slate-900/60 hover:bg-slate-800/80 border border-white/5 transition-all"
-            >
-              <Bookmark className="w-4 h-4 text-indigo-400" />
-              <span>{isBengali ? "ড্যাশবোর্ড" : "Progress"}</span>
-            </Link>
 
             {/* Language Toggle (EN / বাংলা) */}
             <button

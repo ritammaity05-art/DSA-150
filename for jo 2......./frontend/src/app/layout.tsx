@@ -3,6 +3,7 @@ import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { ZeroKnowledgeProvider } from "@/context/ZeroKnowledgeContext";
 
 export const metadata: Metadata = {
   title: "150 STRICKs - Master Top 150 Coding Interview Problems | Powered by Ritam",
@@ -21,7 +22,9 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <LanguageProvider>
-              {children}
+              <ZeroKnowledgeProvider>
+                {children}
+              </ZeroKnowledgeProvider>
             </LanguageProvider>
           </AuthProvider>
         </ThemeProvider>
