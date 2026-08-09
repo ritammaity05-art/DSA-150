@@ -12,7 +12,7 @@ import { fetchProblemDetail, ProblemDetail } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
 import { 
   ArrowLeft, Zap, Layers, CheckCircle2, AlertCircle, Sparkles, 
-  HelpCircle, Compass, ShieldCheck, Flame, BookOpen, Check, Play, FileCode, ListOrdered
+  HelpCircle, Compass, ShieldCheck, Flame, BookOpen, Check, Play, FileCode, ListOrdered, Baby, Smile
 } from 'lucide-react';
 
 export default function ProblemDetailPage() {
@@ -47,7 +47,7 @@ export default function ProblemDetailPage() {
           <div className="flex flex-col items-center gap-4">
             <div className="w-12 h-12 rounded-full border-4 border-amber-400 border-t-transparent animate-spin" />
             <p className="text-gray-400 font-mono text-sm animate-pulse">
-              {isBengali ? "সমস্যা ও সমাধান লোড হচ্ছে..." : "Loading NeetCode 150 problem breakdown & solutions..."}
+              {isBengali ? "সমস্যা ও সহজ ব্যাখ্যা লোড হচ্ছে..." : "Loading problem breakdown & 5-year-old child stories..."}
             </p>
           </div>
         </div>
@@ -91,8 +91,7 @@ export default function ProblemDetailPage() {
   };
 
   const goldenRule = problem.easy_explanation || problem.analogy || "Focus on key invariants to simplify logic.";
-  const descriptionEnglish = problem.intuition || problem.easy_explanation;
-  const descriptionBengali = problem.bengali_explanation;
+  const childStory = problem.eli10_explanation || problem.analogy || "Imagine matching candies with a friend step by step!";
 
   const example1 = {
     input: "nums = [1, 4, 1, 2]",
@@ -181,6 +180,17 @@ export default function ProblemDetailPage() {
             </div>
           </div>
 
+          {/* 👶 5-Year-Old Child Explanation Mode Banner for Absolute Beginners */}
+          <div className="p-6 rounded-3xl bg-gradient-to-r from-amber-500/20 via-pink-500/20 to-purple-500/20 border border-amber-400/50 shadow-2xl space-y-3">
+            <div className="flex items-center gap-2 text-amber-300 text-xs font-black uppercase tracking-wider">
+              <Smile className="w-5 h-5 text-amber-400 animate-bounce" />
+              <span>{isBengali ? "👶 ০% কোডিং জানা মানুষের জন্য ৫ বছরের বাচ্চার গল্পে ব্যাখ্যা (Zero-Knowledge Beginner Story)" : "👶 Zero-Knowledge Beginner Story (5-Year-Old Child Mode)"}</span>
+            </div>
+            <p className="text-sm sm:text-base font-semibold text-amber-100 leading-relaxed font-sans">
+              {childStory}
+            </p>
+          </div>
+
           {/* ⚡ 10-Second Golden Rule Banner */}
           <div className="p-5 rounded-2xl bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-indigo-500/20 border border-amber-400/40 shadow-xl space-y-2">
             <div className="flex items-center gap-2 text-amber-300 text-xs font-extrabold uppercase tracking-wider">
@@ -189,17 +199,6 @@ export default function ProblemDetailPage() {
             </div>
             <p className="text-sm font-semibold text-amber-100 leading-relaxed font-sans">
               {goldenRule}
-            </p>
-          </div>
-
-          {/* Original Problem Statement Description */}
-          <div className="space-y-3 pt-2">
-            <h3 className="text-sm font-extrabold uppercase tracking-wider text-gray-300 flex items-center gap-2">
-              <Compass className="w-4 h-4 text-amber-400" />
-              <span>{isBengali ? "সমস্যার ইনটুইশন ও বিবরণী (Problem Intuition)" : "Problem Intuition & Breakdown"}</span>
-            </h3>
-            <p className="text-sm text-gray-300 leading-relaxed font-sans bg-slate-900/60 p-5 rounded-2xl border border-white/5">
-              {isBengali ? descriptionBengali : descriptionEnglish}
             </p>
           </div>
 
