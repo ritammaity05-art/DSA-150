@@ -183,19 +183,19 @@ export default function ProblemDetailPage() {
 
         </div>
 
-        {/* 🎬 Visual Dry Run Player Simulator */}
+        {/* 🎬 Visual Dry Run Player Simulator with Both Example 1 & Example 2 */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
               <span>🎬</span>
-              <span>{isBengali ? "ইন্টারেক্টিভ ভিজ্যুয়াল ড্রাই রান (Visual Dry Run)" : "Interactive Visual Dry Run Simulator"}</span>
+              <span>{isBengali ? "ইন্টারেক্টিভ ভিজ্যুয়াল ড্রাই রান (Both Example 1 & 2)" : "Interactive Visual Dry Run (Example 1 & Example 2)"}</span>
             </h2>
             <span className="text-xs font-mono text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
-              Interactive Animation Player
+              Multi-Example Test Case Player
             </span>
           </div>
 
-          <VisualDryRun steps={problem.dry_run_steps} />
+          <VisualDryRun steps={problem.dry_run_steps} extraExample={problem.extra_example} />
         </section>
 
         {/* 💻 Multi-Language Code Viewer (Python, C++, Java, JS) */}

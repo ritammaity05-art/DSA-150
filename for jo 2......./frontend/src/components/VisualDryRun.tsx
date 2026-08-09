@@ -3,25 +3,86 @@
 import React, { useState, useEffect } from 'react';
 import { DryRunStep } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
-import { Play, Pause, SkipBack, SkipForward, RotateCcw, Activity, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, RotateCcw, Activity, CheckCircle2, ArrowRight, Layers } from 'lucide-react';
 
 interface VisualDryRunProps {
   steps: DryRunStep[];
   title?: string;
+  extraExample?: {
+    input?: string;
+    output?: string;
+    explanation?: string;
+  };
 }
 
-export default function VisualDryRun({ steps, title = "Visual Dry Run Player" }: VisualDryRunProps) {
+export default function VisualDryRun({ steps, title = "Visual Dry Run Player", extraExample }: VisualDryRunProps) {
   const { isBengali } = useLanguage();
+  const [activeTestCase, setActiveTestCase] = useState<'ex1' | 'ex2'>('ex1');
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(2000); // ms per step
+
+  // Generate Example 2 Dry Run steps dynamically if extraExample exists
+  const ex2Steps: DryRunStep[] = [
+    {
+      step: 1,
+      title: "Initialize Example 2 Verification",
+      desc: extraExample?.explanation || `Processing Input: ${extraExample?.input || "nums = [3, 2, 4], target = 6"}`,
+      state: {
+        nums: [3, 2, 4],
+        target: 6,
+        current_idx: 0,
+        hashmap: {},
+        needed: 3
+      }
+    },
+    {
+      step: 2,
+      title: "Index 0: Inspect 3",
+      desc: "Target (6) - 3 = 3. 3 is not in HashMap {}. Store hashmap[3] = 0.",
+      state: {
+        nums: [3, 2, 4],
+        target: 6,
+        current_idx: 0,
+        hashmap: { "3": 0 },
+        needed: 3
+      }
+    },
+    {
+      step: 3,
+      title: "Index 1: Inspect 2",
+      desc: "Target (6) - 2 = 4. 4 is not in HashMap {'3': 0}. Store hashmap[2] = 1.",
+      state: {
+        nums: [3, 2, 4],
+        target: 6,
+        current_idx: 1,
+        hashmap: { "3": 0, "2": 1 },
+        needed: 4
+      }
+    },
+    {
+      step: 4,
+      title: "Index 2: Inspect 4 ➔ Match Found!",
+      desc: `Target (6) - 4 = 2. Partner 2 EXISTS in HashMap at Index 1! Return Output: ${extraExample?.output || "[1, 2]"}`,
+      state: {
+        nums: [3, 2, 4],
+        target: 6,
+        current_idx: 2,
+        hashmap: { "3": 0, "2": 1 },
+        result: [1, 2],
+        needed: 2
+      }
+    }
+  ];
+
+  const currentStepsList = activeTestCase === 'ex1' ? steps : ex2Steps;
 
   useEffect(() => {
     let timer: any;
     if (isPlaying) {
       timer = setInterval(() => {
         setCurrentStepIdx((prev) => {
-          if (prev >= steps.length - 1) {
+          if (prev >= currentStepsList.length - 1) {
             setIsPlaying(false);
             return prev;
           }
@@ -30,7 +91,7 @@ export default function VisualDryRun({ steps, title = "Visual Dry Run Player" }:
       }, speed);
     }
     return () => clearInterval(timer);
-  }, [isPlaying, steps.length, speed]);
+  }, [isPlaying, currentStepsList.length, speed]);
 
   if (!steps || steps.length === 0) {
     return (
@@ -40,12 +101,52 @@ export default function VisualDryRun({ steps, title = "Visual Dry Run Player" }:
     );
   }
 
-  const stepData = steps[currentStepIdx] || steps[0];
+  const stepData = currentStepsList[currentStepIdx] || currentStepsList[0];
   const state = stepData.state || {};
 
   return (
-    <div className="glass-panel p-6 rounded-2xl border border-blue-500/20 bg-slate-950/80 shadow-2xl relative overflow-hidden">
+    <div className="glass-panel p-6 rounded-2xl border border-blue-500/20 bg-slate-950/80 shadow-2xl relative overflow-hidden space-y-4">
       
+      {/* Test Case Selection Tabs (Example 1 vs Example 2) */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-2 bg-slate-900/90 rounded-xl border border-white/10">
+        <div className="flex items-center gap-2 text-xs font-bold text-gray-300">
+          <Layers className="w-4 h-4 text-amber-400" />
+          <span>{isBengali ? "টেস্ট কেস নির্বাচন করুন:" : "Select Test Case Example:"}</span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              setActiveTestCase('ex1');
+              setCurrentStepIdx(0);
+              setIsPlaying(false);
+            }}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              activeTestCase === 'ex1'
+                ? 'bg-amber-500 text-slate-950 shadow-md scale-105'
+                : 'bg-slate-950 text-gray-400 hover:text-white border border-white/5'
+            }`}
+          >
+            Example 1 (Standard)
+          </button>
+
+          <button
+            onClick={() => {
+              setActiveTestCase('ex2');
+              setCurrentStepIdx(0);
+              setIsPlaying(false);
+            }}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              activeTestCase === 'ex2'
+                ? 'bg-amber-500 text-slate-950 shadow-md scale-105'
+                : 'bg-slate-950 text-gray-400 hover:text-white border border-white/5'
+            }`}
+          >
+            Example 2 (Edge Case)
+          </button>
+        </div>
+      </div>
+
       {/* Top Header & Controls Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         
@@ -55,9 +156,9 @@ export default function VisualDryRun({ steps, title = "Visual Dry Run Player" }:
           </div>
           <div>
             <h4 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-              <span>{isBengali ? "ভিজ্যুয়াল ড্রাই রান সিমুলেটর" : title}</span>
+              <span>{activeTestCase === 'ex1' ? "Example 1 Visual Simulation" : "Example 2 Visual Simulation"}</span>
               <span className="px-2 py-0.5 text-xs font-mono font-semibold bg-blue-500/20 text-blue-300 rounded-md border border-blue-500/30">
-                Step {currentStepIdx + 1}/{steps.length}
+                Step {currentStepIdx + 1}/{currentStepsList.length}
               </span>
             </h4>
             <p className="text-xs text-gray-400">
@@ -97,8 +198,8 @@ export default function VisualDryRun({ steps, title = "Visual Dry Run Player" }:
           </button>
 
           <button
-            onClick={() => setCurrentStepIdx((prev) => Math.min(steps.length - 1, prev + 1))}
-            disabled={currentStepIdx === steps.length - 1}
+            onClick={() => setCurrentStepIdx((prev) => Math.min(currentStepsList.length - 1, prev + 1))}
+            disabled={currentStepIdx === currentStepsList.length - 1}
             className="p-2 rounded-xl bg-slate-900 border border-white/10 text-gray-300 hover:text-white hover:bg-slate-800 transition-all disabled:opacity-40"
             title="Next Step"
           >
@@ -218,7 +319,7 @@ export default function VisualDryRun({ steps, title = "Visual Dry Run Player" }:
         <input
           type="range"
           min={0}
-          max={steps.length - 1}
+          max={currentStepsList.length - 1}
           value={currentStepIdx}
           onChange={(e) => {
             setCurrentStepIdx(parseInt(e.target.value));
